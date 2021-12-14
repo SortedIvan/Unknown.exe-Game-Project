@@ -195,6 +195,14 @@ public class PlayerMovement : MonoBehaviour
                 _anim.SetBool("isFalling", false);
                 _anim.SetFloat("verticalDirection", 0f);
             }
+            if(_rb.velocity.x > 0 || _rb.velocity.x < 0)
+            {
+            _anim.SetBool("isWalking", true);
+            }
+            else
+            {
+            _anim.SetBool("isWalking", false);
+            }
     }
 
     void CornerCorrect(float Yvelocity)

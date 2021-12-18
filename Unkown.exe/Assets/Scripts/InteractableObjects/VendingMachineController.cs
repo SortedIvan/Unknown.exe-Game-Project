@@ -9,7 +9,6 @@ public class VendingMachineController : MonoBehaviour
     [SerializeField] public bool isVendingInteracted;
     public void Start()
     {
-
     }
 
     public void VMachineInteraction()
@@ -25,11 +24,13 @@ public class VendingMachineController : MonoBehaviour
 
     public void LeaveVendingMachine()
     {
-        
         isVendingInteracted = false;
+
 
         Debug.Log("Vending machine is no longer being interacted with");
     }
+    
+    
 
 
 

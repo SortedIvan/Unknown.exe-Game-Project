@@ -30,13 +30,9 @@ public class Interactable : MonoBehaviour
             {
                 interactAction.Invoke(); // This instantiates the event
             }
+            
         }
-        if (!isInRange)
-        {
 
-            outOfRangeInteraction.Invoke();
-
-        }
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -56,6 +52,14 @@ public class Interactable : MonoBehaviour
             isInRange = false;
             Debug.Log("Player is no longer range");
             collision.gameObject.GetComponent<PlayerManager>().NoInteractPlayer();
+            
         }
+    }
+
+    
+
+    public void SetIsInRange(bool newInRange)
+    {
+        this.isInRange = newInRange;
     }
 }

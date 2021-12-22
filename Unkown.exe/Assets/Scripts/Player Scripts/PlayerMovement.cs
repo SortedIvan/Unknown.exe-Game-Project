@@ -16,11 +16,11 @@ public class PlayerMovement : MonoBehaviour
     [Header("Movement Variables")]
     [SerializeField] private float _movementAcceleration = 70f;
     [SerializeField] private float _maxMoveSpeed = 12f;
-    [SerializeField] private float _groundLinearDrag = 7f;
-    private float _horizontalDirection;
+    [SerializeField] public float _groundLinearDrag = 7f;
+    public float _horizontalDirection;
     private float _verticalDirection;
     private bool _changingDirection => (_rb.velocity.x > 0f && _horizontalDirection < 0f) || (_rb.velocity.x < 0f && _horizontalDirection > 0f);
-    private bool _facingRight = true;
+    public bool _facingRight = true;
 
     [Header("Jump Variables")]
     [SerializeField] private float _jumpForce = 12f;
@@ -52,6 +52,9 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private Vector3 _edgeRaycastOffset;
     [SerializeField] private Vector3 _innerRaycastOffset;
     private bool _canCornerCorrect;
+
+    [Header("Slide")]
+    [SerializeField] private float _slideMultiplier;
 
     private void Start()
     {
@@ -106,6 +109,8 @@ public class PlayerMovement : MonoBehaviour
         if (Mathf.Abs(_rb.velocity.x) > _maxMoveSpeed)
             _rb.velocity = new Vector2(Mathf.Sign(_rb.velocity.x) * _maxMoveSpeed, _rb.velocity.y);
     }
+
+
 
     private void ApplyGroundLinearDrag()
     {

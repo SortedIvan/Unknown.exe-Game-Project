@@ -53,10 +53,14 @@
     <UnityVersion>2020.3.24f1</UnityVersion>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Assets\Scripts\Player Scripts\PlayerMovement.cs" />
-    <Compile Include="Assets\Scripts\InteractableObjects\VendingMachineController.cs" />
     <Compile Include="Assets\Scripts\InteractableObjects\Interactable.cs" />
     <Compile Include="Assets\Scripts\Player Scripts\PlayerManager.cs" />
+    <Compile Include="Assets\Scripts\Player Scripts\PlayerMovement.cs" />
+    <Compile Include="Assets\Scripts\InteractableObjects\VendingMachineController.cs" />
+    <Compile Include="Assets\Scripts\Player Scripts\PlayerSlide.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Assets\Sprites\Test Sprites\warped city files\public-license.txt" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">
@@ -738,6 +742,14 @@
     <ProjectReference Include="Unity.ShaderGraph.Editor.csproj">
       <Project>{E865028D-87C3-9FF1-6AFC-207D7C1531B1}</Project>
       <Name>Unity.ShaderGraph.Editor</Name>
+    </ProjectReference>
+    <ProjectReference Include="Cinemachine.csproj">
+      <Project>{5CB6CDC4-13AC-4023-AFCB-7DF3CE098A54}</Project>
+      <Name>Cinemachine</Name>
+    </ProjectReference>
+    <ProjectReference Include="com.unity.cinemachine.editor.csproj">
+      <Project>{5BCAE596-7448-3402-F09C-AC3456866F75}</Project>
+      <Name>com.unity.cinemachine.editor</Name>
     </ProjectReference>
     <ProjectReference Include="Unity.RenderPipelines.Universal.Editor.csproj">
       <Project>{1891AC54-AF56-44EC-4CBA-02FC8AAC3E2F}</Project>

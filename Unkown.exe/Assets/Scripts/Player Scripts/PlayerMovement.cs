@@ -56,6 +56,10 @@ public class PlayerMovement : MonoBehaviour
     [Header("Slide")]
     [SerializeField] private float _slideMultiplier;
 
+
+    [Header("Idle")]
+    [SerializeField] private bool isNotMoving;
+
     private void Start()
     {
         _rb = GetComponent<Rigidbody2D>();
@@ -93,7 +97,7 @@ public class PlayerMovement : MonoBehaviour
                     Jump(Vector2.up);
 
             }
-        
+
         if (_canCornerCorrect) CornerCorrect(_rb.velocity.y);
     }
 

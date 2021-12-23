@@ -15,16 +15,21 @@ public class PlayerSlide : MonoBehaviour
 
     public float slideSpeed = 5f;
 
+    private void Start()
+    {
+        this.anim = gameObject.GetComponent<Animator>();
+    }
     private void Update()
     {
         if (Input.GetKey(KeyCode.LeftShift))
             performSlide();
+
     }
 
     private void performSlide()
     {
         isSliding = true;
-        // to be added anim.SetBool(sliding);
+        anim.SetBool("isSlide", true);
         normalCollider.enabled = false;
         slideCollider.enabled = true;
 
@@ -45,11 +50,13 @@ public class PlayerSlide : MonoBehaviour
     IEnumerator stopSlide()
     {
         yield return new WaitForSeconds(0.8f);
-        //anim.Play("Idle");
-        //anim.SetBool ("isSlide", false);
+        anim.Play("Idle");
+        anim.SetBool ("isSlide", false);
         slideCollider.enabled = false;
         normalCollider.enabled = true;
+        isSliding = false;
         PL._groundLinearDrag = 4f;
+        new WaitForSeconds(0.8f);
 
     }
 

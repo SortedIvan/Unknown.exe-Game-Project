@@ -56,8 +56,6 @@ public class Interactable : MonoBehaviour
         }
     }
 
-    
-
     public void SetIsInRange(bool newInRange)
     {
         this.isInRange = newInRange;

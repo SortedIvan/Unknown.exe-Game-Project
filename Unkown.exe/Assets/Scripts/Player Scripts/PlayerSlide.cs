@@ -6,6 +6,8 @@ public class PlayerSlide : MonoBehaviour
 {
     public PlayerMovement PL;
     public bool isSliding = false;
+    public string slidingAnimation = "Slide";
+    public string idleAnimation = "Idle";
 
     public Rigidbody2D rb;
     public Animator anim;
@@ -22,14 +24,25 @@ public class PlayerSlide : MonoBehaviour
     private void Update()
     {
         if (Input.GetKey(KeyCode.LeftShift))
+        {
             performSlide();
+        }
+        else
+        {
+            PL.ChangeAnimationState(idleAnimation);
+            slideCollider.enabled = false;
+            normalCollider.enabled = true;
+            isSliding = false;
+            PL._groundLinearDrag = 4f;
+        }
+            
 
     }
 
     private void performSlide()
     {
         isSliding = true;
-        anim.SetBool("isSlide", true);
+        PL.ChangeAnimationState(slidingAnimation);
         normalCollider.enabled = false;
         slideCollider.enabled = true;
 
@@ -43,22 +56,10 @@ public class PlayerSlide : MonoBehaviour
             rb.AddForce(new Vector2(PL._horizontalDirection, 0f) * slideSpeed * Time.deltaTime);
             PL._groundLinearDrag = 1f;
         }
-        StartCoroutine("stopSlide");
+        
 
     }
 
-    IEnumerator stopSlide()
-    {
-        yield return new WaitForSeconds(0.8f);
-        anim.Play("Idle");
-        anim.SetBool ("isSlide", false);
-        slideCollider.enabled = false;
-        normalCollider.enabled = true;
-        isSliding = false;
-        PL._groundLinearDrag = 4f;
-        new WaitForSeconds(0.8f);
-
-    }
 
 
 

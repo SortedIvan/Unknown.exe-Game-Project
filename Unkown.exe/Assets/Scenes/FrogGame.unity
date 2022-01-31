@@ -690,7 +690,6 @@ GameObject:
   - component: {fileID: 1645616755}
   - component: {fileID: 1645616759}
   - component: {fileID: 1645616760}
-  - component: {fileID: 1645616761}
   m_Layer: 0
   m_Name: FrogPlayer
   m_TagString: Untagged
@@ -710,6 +709,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aa4e79bf698d4344e8f76fdebe93fada, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  slidingAnimation: Slide
+  currentState: 
   _groundLayer:
     serializedVersion: 2
     m_Bits: 64
@@ -729,17 +730,17 @@ MonoBehaviour:
   _fallMultiplier: 8
   _lowJumpFallMultiplier: 5
   _downMultiplier: 12
-  _extraJumps: 1
   _hangTime: 0.1
-  _jumpBufferLength: 0.1
+  normalCollider: {fileID: 1645616759}
+  slideCollider: {fileID: 244751335}
+  slideSpeed: 20
   _groundRaycastLength: 0.84
   _groundRaycastOffset: {x: 0, y: 0, z: 0}
   _wallRaycastLength: 0
   _topRaycastLength: 0
   _edgeRaycastOffset: {x: 0, y: 0, z: 0}
   _innerRaycastOffset: {x: 0, y: 0, z: 0}
-  _slideMultiplier: 5000
-  isNotMoving: 0
+  _slideMultiplier: 10000
 --- !u!50 &1645616756
 Rigidbody2D:
   serializedVersion: 4
@@ -872,25 +873,6 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
---- !u!114 &1645616761
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1645616754}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b0ad7f856b8906240bf9428eac853c5e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  PL: {fileID: 1645616755}
-  isSliding: 0
-  rb: {fileID: 1645616756}
-  anim: {fileID: 0}
-  normalCollider: {fileID: 1645616759}
-  slideCollider: {fileID: 244751335}
-  slideSpeed: 10000
 --- !u!1 &1952314579
 GameObject:
   m_ObjectHideFlags: 0

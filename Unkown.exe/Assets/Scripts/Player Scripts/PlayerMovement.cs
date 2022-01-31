@@ -8,6 +8,12 @@ public class PlayerMovement : MonoBehaviour
     private Rigidbody2D _rb;
     private Animator _anim;
 
+    [Header("Animation Strings")]
+    const string Walk = "Run";
+    const string Idle = "Idle";
+    public string slidingAnimation = "Slide";
+    public string currentState;
+
     [Header("Layer Masks")]
     [SerializeField] private LayerMask _groundLayer;
     [SerializeField] private LayerMask _wallLayer;
@@ -17,7 +23,8 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float _movementAcceleration = 70f;
     [SerializeField] private float _maxMoveSpeed = 12f;
     [SerializeField] public float _groundLinearDrag = 7f;
-    public float _horizontalDirection;
+
+    [SerializeField] public float _horizontalDirection;
     private float _verticalDirection;
     private bool _changingDirection => (_rb.velocity.x > 0f && _horizontalDirection < 0f) || (_rb.velocity.x < 0f && _horizontalDirection > 0f);
     public bool _facingRight = true;
@@ -28,14 +35,16 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float _fallMultiplier = 8f;
     [SerializeField] private float _lowJumpFallMultiplier = 5f;
     [SerializeField] private float _downMultiplier = 12f;
-    [SerializeField] private int _extraJumps = 1;
     [SerializeField] private float _hangTime = .1f;
-    [SerializeField] private float _jumpBufferLength = .1f;
-    private int _extraJumpsValue;
+
+
     private float _hangTimeCounter;
-    private float _jumpBufferCounter;
-    private bool _canJump => _jumpBufferCounter > 0f && (_hangTimeCounter > 0f || _extraJumpsValue > 0 || _onWall);
-    private bool _isJumping = false;
+
+    [Header("Sliding")]
+    public BoxCollider2D normalCollider;
+    public BoxCollider2D slideCollider;
+    public float slideSpeed = 5f;
+    private bool isSliding;
 
     [Header("Ground Collision Variables")]
     [SerializeField] private float _groundRaycastLength;
@@ -57,46 +66,64 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float _slideMultiplier;
 
 
-    [Header("Idle")]
-    [SerializeField] private bool isNotMoving;
-
     private void Start()
     {
         _rb = GetComponent<Rigidbody2D>();
         _anim = GetComponent<Animator>();
     }
 
+    public string GetCurrentState()
+    {
+        return this.currentState;
+    }
+
     private void Update()
     {
         _horizontalDirection = GetInput().x;
         _verticalDirection = GetInput().y;
-        if (Input.GetButtonDown("Jump")) _jumpBufferCounter = _jumpBufferLength;
-        else _jumpBufferCounter -= Time.deltaTime;
         Animation();
+    }
+
+    public void ChangeAnimationState(string newState)
+    {
+        if (currentState == newState) return;
+
+        _anim.Play(newState);
     }
 
     private void FixedUpdate()
     {
         CheckCollisions();
-        MoveCharacter();
+        if (!isSliding)
+        {
+            MoveCharacter();
+        }
         
-            if (_onGround)
-            {
-                ApplyGroundLinearDrag();
-                _hangTimeCounter = _hangTime;
-            }
-            else
-            {
-                ApplyAirLinearDrag();
-                FallMultiplier();
-                _hangTimeCounter -= Time.fixedDeltaTime;
-                if (!_onWall || _rb.velocity.y < 0f) _isJumping = false;
-            }
-            if (_canJump)
-            {
-                    Jump(Vector2.up);
 
-            }
+        if (_onGround)
+        {
+            ApplyGroundLinearDrag();
+            _hangTimeCounter = _hangTime;
+        }
+        else
+        {
+            ApplyAirLinearDrag();
+            FallMultiplier();
+            _hangTimeCounter -= Time.fixedDeltaTime;
+        }
+        if (Input.GetKey(KeyCode.LeftShift))
+        {
+            isSliding = true;
+            performSlide();
+            
+        }
+        else
+        {
+            isSliding = false;
+            slideCollider.enabled = false;
+            normalCollider.enabled = true;
+            _groundLinearDrag = 4f;
+        }
 
         if (_canCornerCorrect) CornerCorrect(_rb.velocity.y);
     }
@@ -114,8 +141,6 @@ public class PlayerMovement : MonoBehaviour
             _rb.velocity = new Vector2(Mathf.Sign(_rb.velocity.x) * _maxMoveSpeed, _rb.velocity.y);
     }
 
-
-
     private void ApplyGroundLinearDrag()
     {
         if (Mathf.Abs(_horizontalDirection) < 0.4f || _changingDirection)
@@ -132,18 +157,6 @@ public class PlayerMovement : MonoBehaviour
     {
         _rb.drag = _airLinearDrag;
     }
-
-    private void Jump(Vector2 direction)
-    {
-        ApplyAirLinearDrag();
-        _rb.velocity = new Vector2(_rb.velocity.x, 0f);
-        _rb.AddForce(direction * _jumpForce, ForceMode2D.Impulse);
-        _hangTimeCounter = 0f;
-        _jumpBufferCounter = 0f;
-        _isJumping = true;
-    }
-
-
 
     private void FallMultiplier()
     {
@@ -168,11 +181,24 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    private void performSlide()
+    {
+        normalCollider.enabled = false;
+        slideCollider.enabled = true;
+
+        if (!_facingRight)
+        {
+            _rb.AddForce(new Vector2(_horizontalDirection, 0f) * slideSpeed * Time.deltaTime, ForceMode2D.Impulse);
+            _groundLinearDrag = 1f;
+        }
+        else
+        {
+            _rb.AddForce(new Vector2(_horizontalDirection, 0f) * slideSpeed * Time.deltaTime, ForceMode2D.Impulse);
+            _groundLinearDrag = 1f;
+        }
 
 
-
-
-   
+    }
 
     void Flip()
     {
@@ -184,34 +210,28 @@ public class PlayerMovement : MonoBehaviour
     void Animation()
     {
 
-            if ((_horizontalDirection < 0f && _facingRight || _horizontalDirection > 0f && !_facingRight))
-            {
-                Flip();
-            }
-            if (_onGround)
-            {
-                _anim.SetBool("isGrounded", true);
-                _anim.SetBool("isFalling", false);
-                _anim.SetFloat("horizontalDirection", Mathf.Abs(_horizontalDirection));
-            }
-            else
-            {
-                _anim.SetBool("isGrounded", false);
-            }
-            if (_isJumping)
-            {
-                _anim.SetBool("isJumping", true);
-                _anim.SetBool("isFalling", false);
-                _anim.SetFloat("verticalDirection", 0f);
-            }
-            if(_rb.velocity.x > 0 || _rb.velocity.x < 0)
-            {
-            _anim.SetBool("isWalking", true);
-            }
-            else
-            {
-            _anim.SetBool("isWalking", false);
-            }
+        if ((_horizontalDirection < 0f && _facingRight || _horizontalDirection > 0f && !_facingRight))
+        {
+            Flip();
+        }
+        if (_horizontalDirection > 0 && !isSliding)
+        {
+            ChangeAnimationState(Walk);
+        }
+        else if (_horizontalDirection < 0 && !isSliding)
+        {
+            ChangeAnimationState(Walk);
+        }
+        else if (isSliding)
+        {
+            ChangeAnimationState(slidingAnimation);
+        }
+        else
+        {
+            ChangeAnimationState(Idle);
+        }
+
+
     }
 
     void CornerCorrect(float Yvelocity)

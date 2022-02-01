@@ -54,11 +54,14 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Assets\Scripts\InteractableObjects\Interactable.cs" />
+    <Compile Include="Assets\Scripts\InteractableObjects\InteractableFrog.cs" />
     <Compile Include="Assets\Scripts\Player Scripts\PlayerManager.cs" />
     <Compile Include="Assets\Scripts\Player Scripts\PlayerSlide.cs" />
+    <Compile Include="Assets\Scripts\Player Scripts\MoraPlayerScript.cs" />
     <Compile Include="Assets\Scripts\Player Scripts\PlayerMovement.cs" />
     <Compile Include="Assets\Scripts\InteractableObjects\VendingMachineController.cs" />
-    <Compile Include="Assets\Scripts\Player Scripts\MoraPlayerScript.cs" />
+    <Compile Include="Assets\Scripts\World scripts\Vending machine\VendingMachineGUI.cs" />
+    <Compile Include="Assets\Scripts\World scripts\Vending machine\PlayerOrder.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Sprites\Test Sprites\warped city files\public-license.txt" />

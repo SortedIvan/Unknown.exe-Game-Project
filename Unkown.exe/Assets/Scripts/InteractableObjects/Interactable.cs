@@ -52,6 +52,7 @@ public class Interactable : MonoBehaviour
             isInRange = false;
             Debug.Log("Player is no longer range");
             collision.gameObject.GetComponent<PlayerManager>().NoInteractPlayer();
+            outOfRangeInteraction.Invoke();
             
         }
     }

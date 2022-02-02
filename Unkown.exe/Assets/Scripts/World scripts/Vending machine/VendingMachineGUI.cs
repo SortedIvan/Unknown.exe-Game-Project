@@ -34,6 +34,7 @@ public class VendingMachineGUI : MonoBehaviour
     public void Pepe()
     {
         GameObject a = Instantiate(pepe) as GameObject;
+        a.transform.position = new Vector2(player.transform.position.x + 1, player.transform.position.y + 1);
 
     }
 

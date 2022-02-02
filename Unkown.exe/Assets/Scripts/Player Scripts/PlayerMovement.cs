@@ -1,7 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using System;
+using System.Linq;
 public class PlayerMovement : MonoBehaviour
 {
     [Header("Components")]
@@ -37,6 +38,10 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float _downMultiplier = 12f;
     [SerializeField] private float _hangTime = .1f;
 
+    [Header("Enemy Interaction")]
+    [SerializeField] private List<GameObject> nearbyFlies = new List<GameObject>();
+    public GameObject nearestFly;
+
 
     private float _hangTimeCounter;
 
@@ -53,18 +58,19 @@ public class PlayerMovement : MonoBehaviour
 
     [Header("Wall Collision Variables")]
     [SerializeField] private float _wallRaycastLength;
-    private bool _onWall;
-    private bool _onRightWall;
+    private bool _onWall = false;
+    private bool _onRightWall = false;
 
     [Header("Corner Correction Variables")]
     [SerializeField] private float _topRaycastLength;
     [SerializeField] private Vector3 _edgeRaycastOffset;
     [SerializeField] private Vector3 _innerRaycastOffset;
-    private bool _canCornerCorrect;
+    private bool _canCornerCorrect = false;
 
     [Header("Slide")]
     [SerializeField] private float _slideMultiplier;
 
+    private bool isEating = false;
 
     private void Start()
     {
@@ -82,6 +88,8 @@ public class PlayerMovement : MonoBehaviour
         _horizontalDirection = GetInput().x;
         _verticalDirection = GetInput().y;
         Animation();
+        AssignNearstFly(_rb.transform.position, nearbyFlies);
+   
     }
 
     public void ChangeAnimationState(string newState)
@@ -98,7 +106,7 @@ public class PlayerMovement : MonoBehaviour
         {
             MoveCharacter();
         }
-        
+
 
         if (_onGround)
         {
@@ -115,7 +123,7 @@ public class PlayerMovement : MonoBehaviour
         {
             isSliding = true;
             performSlide();
-            
+
         }
         else
         {
@@ -124,7 +132,11 @@ public class PlayerMovement : MonoBehaviour
             normalCollider.enabled = true;
             _groundLinearDrag = 4f;
         }
-
+        if (Input.GetKey(KeyCode.Space))
+        {
+            isEating = true;
+            EatFly();
+        }
         if (_canCornerCorrect) CornerCorrect(_rb.velocity.y);
     }
 
@@ -300,4 +312,72 @@ public class PlayerMovement : MonoBehaviour
         Gizmos.DrawLine(transform.position, transform.position + Vector3.right * _wallRaycastLength);
         Gizmos.DrawLine(transform.position, transform.position + Vector3.left * _wallRaycastLength);
     }
+
+    private void AddFliesToNearby(Collider2D collision)
+    {
+        if (collision.gameObject.CompareTag("Fly"))
+        {
+            this.nearbyFlies.Add(collision.gameObject);
+            Debug.Log("Fly is in range");
+        }
+    }
+    private void RemoveFliesFromNearby(Collider2D collision)
+    {
+        if (collision.gameObject.CompareTag("Fly"))
+        {
+            if (collision.gameObject == nearestFly)
+            {
+                nearestFly = null;
+            }
+            this.nearbyFlies.Remove(collision.gameObject);
+        }
+    }
+    private void AssignNearstFly(Vector2 location, List<GameObject> flies)
+    {
+        nearestFly = ChooseNearest(location, flies);
+    }
+
+    private void EatFly()
+    {
+        Destroy(nearestFly);
+        nearestFly = null;
+    }
+
+
+    GameObject ChooseNearest(Vector2 location, List<GameObject> flies)
+    {
+        float nearestSqrMag = float.PositiveInfinity;
+        GameObject nearestFly = null;
+
+        for (int i = 0; i < flies.Count; i++)
+        {
+            float sqrMag = ((Vector2)flies.ElementAt(i).transform.position - location).sqrMagnitude;
+            if (sqrMag < nearestSqrMag)
+            {
+                nearestSqrMag = sqrMag;
+                nearestFly = flies.ElementAt(i);
+            }
+        }
+
+        return nearestFly;
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.gameObject.CompareTag("Fly"))
+        {
+            AddFliesToNearby(collision);
+        }
+
+
+    }
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+        if (collision.gameObject.CompareTag("Fly"))
+        {
+            RemoveFliesFromNearby(collision);
+        }
+    }
+
+
 }

@@ -42,8 +42,21 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private List<GameObject> nearbyFlies = new List<GameObject>();
     public GameObject nearestFly;
 
-
+    [Header("Player Energy")]
+    [SerializeField] private const int MaxPlayerEnergy = 100;
+    [SerializeField] public int PlayerEnergy = 0;
+    public bool playerHasMax = false;
+    public bool playerHasMin = true;
+    [SerializeField] private int lostEnergyPerSec = 1;
+    [SerializeField] private const int minEnergy = 0;
+    [SerializeField] int flyEnergyRecover = 5;
     private float _hangTimeCounter;
+
+
+    [Header("Player Shooting")]
+    public GameObject Lazer;
+    
+
 
     [Header("Sliding")]
     public BoxCollider2D normalCollider;
@@ -89,8 +102,10 @@ public class PlayerMovement : MonoBehaviour
         _verticalDirection = GetInput().y;
         Animation();
         AssignNearstFly(_rb.transform.position, nearbyFlies);
+        EnergyControl();
    
     }
+
 
     public void ChangeAnimationState(string newState)
     {
@@ -132,19 +147,18 @@ public class PlayerMovement : MonoBehaviour
             normalCollider.enabled = true;
             _groundLinearDrag = 4f;
         }
-        if (Input.GetKey(KeyCode.Space))
+        if (Input.GetKeyDown("space"))
         {
-            isEating = true;
             EatFly();
         }
         if (_canCornerCorrect) CornerCorrect(_rb.velocity.y);
     }
-
+    #region Input
     private Vector2 GetInput()
     {
         return new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
     }
-
+    #endregion
     private void MoveCharacter()
     {
         _rb.AddForce(new Vector2(_horizontalDirection, 0f) * _movementAcceleration);
@@ -339,8 +353,13 @@ public class PlayerMovement : MonoBehaviour
 
     private void EatFly()
     {
-        Destroy(nearestFly);
-        nearestFly = null;
+        if (!this.playerHasMax)
+        {
+            Destroy(nearestFly);
+            nearestFly = null;
+            this.AddEnergy(flyEnergyRecover);
+        }
+        
     }
 
 
@@ -378,6 +397,42 @@ public class PlayerMovement : MonoBehaviour
             RemoveFliesFromNearby(collision);
         }
     }
+
+
+    #region Player Energy Control
+    private void AddEnergy(int amnt)
+    {
+        this.PlayerEnergy += amnt;
+    }
+    private void RemoveEnergy(int amnt)
+    {
+        this.PlayerEnergy -= amnt;
+    }
+
+    private void EnergyControl()
+    {
+        if(this.PlayerEnergy >= MaxPlayerEnergy)
+        {
+            this.PlayerEnergy = 100;
+            this.playerHasMax = true;
+        } else if(this.PlayerEnergy < MaxPlayerEnergy)
+        {
+            this.playerHasMax = false;
+        } else if(this.PlayerEnergy == minEnergy)
+        {
+            this.playerHasMin = true;
+        } else
+        {
+            this.playerHasMin = false;
+        }
+        Debug.Log(this.PlayerEnergy);
+    }
+    #endregion
+
+    #region Player Shooting Control
+    
+    #endregion
+
 
 
 }
